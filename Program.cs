@@ -22,7 +22,7 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(
                       policy =>
                       {
-                          policy.WithOrigins("http://localhost:4200")
+                          policy.WithOrigins(builder.Configuration.GetValue<string>("CorsAllows").Split(';'))
                                     .AllowAnyHeader()
                                     .AllowAnyMethod();
                       });
@@ -40,9 +40,9 @@ builder.Services.AddAuthentication(opt => {
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = "https://localhost:5000/",
-        ValidAudience = "https://localhost:5000/",
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ShoppingFoodSecret"))
+        ValidIssuer = builder.Configuration.GetValue<string>("JwtConfig:Issuer"),
+        ValidAudience = builder.Configuration.GetValue<string>("JwtConfig:Audience"),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("JwtConfig:Secret")))
     };
 });
 
