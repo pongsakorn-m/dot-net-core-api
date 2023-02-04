@@ -1,4 +1,5 @@
 ﻿using DotNetCoreApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -20,6 +21,7 @@ namespace DotNetCoreApi.Controllers
         };
         // GET: api/<FoodController>
         [HttpGet("foods")]
+        [Authorize]
         public ActionResult GetFoods()
         {
             return Ok(Foods);
@@ -27,6 +29,7 @@ namespace DotNetCoreApi.Controllers
 
         // GET api/<FoodController>/foods/getFoodByFoodId/5
         [HttpGet("foods/getFoodByFoodId/{foodId}")]
+        [Authorize]
         public ActionResult GetFood(string foodId)
         {
             Food? food = Foods.FirstOrDefault(food => food.Id == foodId);
@@ -40,6 +43,7 @@ namespace DotNetCoreApi.Controllers
   
         // POST api/<FoodController>/foods/search
         [HttpGet("foods/search")]
+        [Authorize]
         public ActionResult Search([FromQuery] FoodSearchCriteria criteria)
         {
             return Ok(Foods.Where(food => food.Name.Contains(criteria.Keyword)));
