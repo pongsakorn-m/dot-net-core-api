@@ -17,6 +17,8 @@ namespace DotNetCoreApi.Controllers
             new User() { Username = "mockup_user", Password = "123456", FullName = "Mokcup User", FailCount = 0 }
         };
 
+        public static int MaxFailCount = 3;
+
         [HttpPost]
         public IActionResult Login([FromBody] Login model)
         {
@@ -25,13 +27,28 @@ namespace DotNetCoreApi.Controllers
                 return BadRequest("Please input your username and password.");
             }
 
-            User user = Users.FirstOrDefault(user => user.Username == model.UserName && user.Password == model.Password);
+            User user = Users.FirstOrDefault(user => user.Username == model.UserName);
 
             if (user is null)
             {
                 return BadRequest("Your username or password is incorrect.");
             }
 
+            if (user.Password != model.Password)
+            {
+                user.FailCount++;
+                if (user.FailCount >= MaxFailCount)
+                {
+                    user.LockoutEnd = DateTime.Now.AddMinutes(1);
+                }
+                return BadRequest("Your username or password is incorrect.");
+            }
+
+            if (user.FailCount >= MaxFailCount && user.LockoutEnd > DateTime.Now)
+            {
+                TimeSpan ts = (user.LockoutEnd.GetValueOrDefault()) - DateTime.Now;
+                return BadRequest(string.Format("Your account is locked. Please try again in {0} seconds.", ts.TotalSeconds));
+            }
             var token = this.CreateJwtToken(user);
             return Ok(new LoginResponse
             {
