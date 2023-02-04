@@ -9,7 +9,7 @@ namespace DotNetCoreApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LoginController : Controller
+    public class LoginController : ControllerBase
     {
         public static List<User> Users = new List<User>()
         {
